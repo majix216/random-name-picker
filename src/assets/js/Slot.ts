@@ -1,6 +1,8 @@
 interface SlotConfigurations {
   /** User configuration for maximum item inside a reel */
   maxReelItems?: number;
+
+  durationTimeYeah ?: number;
   /** User configuration for whether winner should be removed from name list */
   removeWinner?: boolean;
   /** User configuration for element selector which reel items should append to */
@@ -26,6 +28,8 @@ export default class Slot {
 
   /** Maximum item inside a reel */
   private maxReelItems: NonNullable<SlotConfigurations['maxReelItems']>;
+
+  private rollDuration : NonNullable<SlotConfigurations['durationTimeYeah']>;
 
   /** Whether winner should be removed from name list */
   private shouldRemoveWinner: NonNullable<SlotConfigurations['removeWinner']>;
@@ -53,7 +57,8 @@ export default class Slot {
    */
   constructor(
     {
-      maxReelItems = 30,
+      maxReelItems = 60,
+      durationTimeYeah = 100,
       removeWinner = true,
       reelContainerSelector,
       onSpinStart,
@@ -65,6 +70,7 @@ export default class Slot {
     this.havePreviousWinner = false;
     this.reelContainer = document.querySelector(reelContainerSelector);
     this.maxReelItems = maxReelItems;
+    this.rollDuration = durationTimeYeah;
     this.shouldRemoveWinner = removeWinner;
     this.onSpinStart = onSpinStart;
     this.onSpinEnd = onSpinEnd;
@@ -73,6 +79,7 @@ export default class Slot {
     // Determine easing based on whether there's a previous winner
     const easingType = this.havePreviousWinner ? 'ease-in-out' : 'ease-out';
 
+    
     // Create reel animation
     this.reelAnimation = this.reelContainer?.animate(
       [
@@ -81,11 +88,12 @@ export default class Slot {
         { transform: `translateY(-${(this.maxReelItems - 1) * (7.5 * 16)}px)`, filter: 'blur(0)' }
       ],
       {
-        duration: this.maxReelItems * 100, // 100ms for 1 item
+        duration: this.maxReelItems * this.rollDuration, // 100ms for 1 item
         easing: easingType, // Apply the determined easing
         iterations: 1
       }
     );
+    
 
     this.reelAnimation?.cancel();
   }
@@ -126,6 +134,14 @@ export default class Slot {
   /** Getter for shouldRemoveWinner */
   get shouldRemoveWinnerFromNameList(): boolean {
     return this.shouldRemoveWinner;
+  }
+
+  set rollDurationTimeYeah(durationTimeYeah: number) {
+    this.rollDuration = durationTimeYeah;
+  }
+
+  get rollDurationTimeYeah() : number {
+    return this.rollDuration;
   }
 
   /**

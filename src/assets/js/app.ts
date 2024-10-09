@@ -14,6 +14,7 @@ import SoundEffects from '@js/SoundEffects';
   const sunburstSvg = document.getElementById('sunburst') as HTMLImageElement | null;
   const confettiCanvas = document.getElementById('confetti-canvas') as HTMLCanvasElement | null;
   const nameListTextArea = document.getElementById('name-list') as HTMLTextAreaElement | null;
+  const rollTimeArea = document.getElementById('roll-time') as HTMLTextAreaElement;
   const removeNameFromListCheckbox = document.getElementById('remove-from-list') as HTMLInputElement | null;
   const enableSoundCheckbox = document.getElementById('enable-sound') as HTMLInputElement | null;
 
@@ -42,7 +43,11 @@ import SoundEffects from '@js/SoundEffects';
   }
 
   const soundEffects = new SoundEffects();
-  const MAX_REEL_ITEMS = 200;
+  let getMaxReelItems = rollTimeArea ? parseInt(rollTimeArea.value, 10) || 100 : 100; // Corrected assignment
+  const MAX_REEL_ITEMS = getMaxReelItems;
+
+ 
+ 
   const CONFETTI_COLORS = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
   let confettiAnimationId;
 
@@ -107,6 +112,9 @@ import SoundEffects from '@js/SoundEffects';
   const onSettingsOpen = () => {
     nameListTextArea.value = slot.names.length ? slot.names.join('\n') : '';
     removeNameFromListCheckbox.checked = slot.shouldRemoveWinnerFromNameList;
+    
+    getMaxReelItems = rollTimeArea ? parseInt(rollTimeArea.value, 10) || 50 : 50;
+   
     enableSoundCheckbox.checked = !soundEffects.mute;
     settingsWrapper.style.display = 'block';
   };
@@ -155,6 +163,8 @@ import SoundEffects from '@js/SoundEffects';
       ? nameListTextArea.value.split(/\n/).filter((name) => Boolean(name.trim()))
       : [];
     slot.shouldRemoveWinnerFromNameList = removeNameFromListCheckbox.checked;
+    getMaxReelItems = rollTimeArea ? parseInt(rollTimeArea.value, 10) || 50 : 50;
+   
     soundEffects.mute = !enableSoundCheckbox.checked;
     onSettingsClose();
   });
